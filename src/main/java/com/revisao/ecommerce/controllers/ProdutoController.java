@@ -1,6 +1,5 @@
 package com.revisao.ecommerce.controllers;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,26 +12,45 @@ import com.revisao.ecommerce.dto.ProdutoDTO;
 import com.revisao.ecommerce.services.ProdutoService;
 
 @RestController
-@RequestMapping
+@RequestMapping("/produtos")
 public class ProdutoController {
 
 	@Autowired
 	ProdutoService service;
-	
+
 	@GetMapping
-	public List<ProdutoDTO>findAll(){
-		return service.findAll();
-	}
-	
-	@GetMapping(value = "/pagina")
-	public Page<ProdutoDTO> findAll(Pageable pagina){
-		return service.findPagina(pagina);
+	public ResponseEntity<List<ProdutoDTO>> findAll(){
+		List<ProdutoDTO> produtos = service.findAll();
+		return ResponseEntity.ok(produtos);
 	}
 
-	@PostMapping(value = "/produto")
+	@GetMapping("/pagina")
+	public ResponseEntity<Page<ProdutoDTO>> findAll(Pageable pagina){
+		Page<ProdutoDTO> produtos = service.findPagina(pagina);
+		return ResponseEntity.ok(produtos);
+	}
+
+	@PostMapping
 	public ResponseEntity<ProdutoDTO> insert(@RequestBody ProdutoDTO dto){
 		dto = service.insert(dto);
 		return ResponseEntity.ok(dto);
 	}
 
+	@GetMapping("/{id}")
+	public ResponseEntity<ProdutoDTO> findById(@PathVariable Long id) {
+		ProdutoDTO dto = service.findById(id);
+		return ResponseEntity.ok(dto);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<ProdutoDTO> update(@PathVariable Long id, @RequestBody ProdutoDTO dto) {
+		dto = service.update(id, dto);
+		return ResponseEntity.ok(dto);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
+		service.delete(id);
+		return ResponseEntity.noContent().build();
+	}
 }

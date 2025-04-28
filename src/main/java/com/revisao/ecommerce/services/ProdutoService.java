@@ -54,4 +54,32 @@ public class ProdutoService {
 		return new ProdutoDTO(entity);
 	}
 
+	public ProdutoDTO findById(Long id) {
+		Produto produto = repo.findById(id).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+		return new ProdutoDTO(produto);
+	}
+
+	@Transactional
+	public ProdutoDTO update(Long id, ProdutoDTO dto) {
+		Produto produto = repo.getReferenceById(id);
+		produto.setNome(dto.getNome());
+		produto.setDescricao(dto.getDescricao());
+		produto.setPreco(dto.getPreco());
+		produto.setImgUrl(dto.getImgUrl());
+
+		produto.getCategorias().clear();
+		for (CategoriaDTO cDTO : dto.getCategorias()) {
+			Categoria cat = repo1.getReferenceById(cDTO.getId());
+			produto.getCategorias().add(cat);
+		}
+
+		produto = repo.save(produto);
+		return new ProdutoDTO(produto);
+	}
+
+	@Transactional
+	public void delete(Long id) {
+		repo.deleteById(id);
+	}
+
 }
